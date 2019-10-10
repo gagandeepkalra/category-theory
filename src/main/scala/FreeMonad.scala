@@ -1,11 +1,14 @@
 import scala.annotation.tailrec
 import scala.language.higherKinds
 
+/*
+construction that allows us to build a very simple Monad from any functor.
+
+Something we can wrap around an arbitrary type constructor (a F[_]) to construct a monad. It allows us to separate
+the structure of the computation from its interpreter, thereby allowing different interpretation depending on context.
+ */
 object FreeMonad {
 
-  /*
-   construction that allows us to build a very simple Monad from any functor.
-   */
   trait Functor[F[_]] {
     def map[A, B](fa: F[A])(f: A => B): F[B]
   }
@@ -101,8 +104,7 @@ object FreeMonad {
       f(a)() match {
         case Left(a) => tailRecM(a)(f)
         case Right(b) =>
-          () =>
-            b
+          () => b
       }
 
   }
