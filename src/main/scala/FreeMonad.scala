@@ -69,6 +69,9 @@ object FreeMonad {
         }
     }
 
+    /*
+    if have monad with tail recursive monadic recursion
+     */
     def runStep(implicit M: Monad[F]): F[A] = {
       @scala.annotation.tailrec
       def step(free: Free[F, A]): F[Either[Free[F, A], A]] = free match {
@@ -87,7 +90,7 @@ object FreeMonad {
   }
 
   case class Return[F[_]: Functor, A](a: A) extends Free[F, A]
-  case class Suspend[F[_]: Functor, A](s: F[Free[F, A]]) extends Free[F, A]
+  case class Suspend[F[_]: Functor, A](s: F[Free[F, A]]) extends Free[F, A] // or go s: F[A] and lift in resume
   case class FlatMap[F[_]: Functor, A, B](fa: Free[F, A], f: A => Free[F, B])
       extends Free[F, B]
 
