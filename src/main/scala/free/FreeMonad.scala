@@ -1,3 +1,5 @@
+package free
+
 import scala.annotation.tailrec
 import scala.language.higherKinds
 
@@ -109,7 +111,6 @@ object FreeMonad {
         case Right(b) =>
           () => b
       }
-
   }
 
 }

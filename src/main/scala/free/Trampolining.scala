@@ -1,3 +1,5 @@
+package free
+
 object Trampolining {
   sealed trait TailRec[A] {
     def flatMap[B](f: A => TailRec[B]): TailRec[B] =
