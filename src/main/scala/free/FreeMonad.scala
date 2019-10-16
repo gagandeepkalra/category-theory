@@ -31,7 +31,7 @@ object FreeMonad {
     }
   }
 
-  sealed abstract class Free[F[_], A](implicit F: Functor[F]) {
+  sealed abstract class Free[F[_], A] {
 
     def flatMap[B](f: A => Free[F, B]): Free[F, B] = this match {
       case FlatMap(fa, g) => FlatMap(fa, (a: Any) => g(a).flatMap(f))
@@ -39,6 +39,21 @@ object FreeMonad {
     }
 
     def map[B](f: A => B): Free[F, B] = flatMap(a => Return(f(a)))
+
+    /*
+    returns either the next step of the computation, or the result if there are no more steps.
+     */
+    @tailrec
+    private def resume(implicit F: Functor[F]): Either[F[Free[F, A]], A] = this match {
+      case Return(a)  => Right(a)
+      case Suspend(s) => Left(s)
+      case FlatMap(fa, f) =>
+        fa match {
+          case Return(a)      => f(a).resume
+          case Suspend(s)     => Left(F.map(s)(_.flatMap(f)))
+          case FlatMap(ga, g) => ga.flatMap(a => g(a).flatMap(f)).resume
+        }
+    }
 
     @tailrec
     final def runT(implicit M: Monad[F],
@@ -49,26 +64,12 @@ object FreeMonad {
       }
     }
 
+    // tail recursive only if the monad is has stack safe flatMap
     def run(implicit M: Monad[F]): F[A] = {
       resume match {
         case Right(a)    => M.unit(a)
         case Left(fFree) => M.flatMap(fFree)(_.run)
       }
-    }
-
-    /*
-    returns either the next step of the computation, or the result if there are no more steps.
-     */
-    @tailrec
-    private def resume: Either[F[Free[F, A]], A] = this match {
-      case Return(a)  => Right(a)
-      case Suspend(s) => Left(s)
-      case FlatMap(fa, f) =>
-        fa match {
-          case Return(a)      => f(a).resume
-          case Suspend(s)     => Left(F.map(s)(_.flatMap(f)))
-          case FlatMap(ga, g) => ga.flatMap(a => g(a).flatMap(f)).resume
-        }
     }
 
     /*
@@ -91,10 +92,9 @@ object FreeMonad {
     }
   }
 
-  case class Return[F[_]: Functor, A](a: A) extends Free[F, A]
-  case class Suspend[F[_]: Functor, A](s: F[Free[F, A]]) extends Free[F, A] // or go s: F[A] and lift in resume
-  case class FlatMap[F[_]: Functor, A, B](fa: Free[F, A], f: A => Free[F, B])
-      extends Free[F, B]
+  case class Return[F[_], A](a: A) extends Free[F, A]
+  case class Suspend[F[_], A](s: F[Free[F, A]]) extends Free[F, A] // or go s: F[A] and lift in resume
+  case class FlatMap[F[_], A, B](fa: Free[F, A], f: A => Free[F, B]) extends Free[F, B]
 
   type Trampoline[A] = Free[Function0, A]
 
