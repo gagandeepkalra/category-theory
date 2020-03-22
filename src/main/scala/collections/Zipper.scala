@@ -1,8 +1,10 @@
 package collections
 
-import instances.StreamInstances._
+import instances.stream._
 
 case class Zipper[A](left: Stream[A], focus: A, right: Stream[A]) {
+
+  def setFocus(newFocus: A): Zipper[A] = Zipper(left, newFocus, right)
 
   def maybeLeft: Option[Zipper[A]] =
     if (left.isEmpty) None
