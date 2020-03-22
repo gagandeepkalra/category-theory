@@ -23,6 +23,9 @@ object zipper {
 
     def map[B](f: A => B): Zipper[B] =
       zipperCoMonad.map(fa)(f)
+
+    def coFlatMap[B](f: Zipper[A] => B): Zipper[B] =
+      zipperCoMonad.coFlatMap(fa)(f)
   }
 
 }
