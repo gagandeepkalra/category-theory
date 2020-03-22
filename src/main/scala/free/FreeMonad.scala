@@ -1,6 +1,6 @@
 package free
 
-import algebra.Functor
+import algebra.{Functor, Monad}
 
 import scala.annotation.tailrec
 import scala.language.higherKinds
@@ -12,22 +12,6 @@ Something we can wrap around an arbitrary type constructor (a F[_]) to construct
 the structure of the computation from its interpreter, thereby allowing different interpretation depending on context.
  */
 object FreeMonad {
-
-  trait Monad[F[_]] extends Functor[F] {
-    def flatMap[A, B](fa: F[A])(f: A => F[B]): F[B]
-
-    def unit[A](a: A): F[A]
-
-    def map[A, B](fa: F[A])(f: A => B): F[B] = flatMap(fa)(a => unit(f(a)))
-
-    /*
-    any operation that you would write using recursive flatMap can be rewritten to use tailRecM
-     */
-    def tailRecM[A, B](a: A)(f: A => F[Either[A, B]]): F[B] = flatMap(f(a)) {
-      case Left(a)  => tailRecM(a)(f)
-      case Right(b) => unit(b)
-    }
-  }
 
   sealed abstract class Free[F[_], A] {
 
