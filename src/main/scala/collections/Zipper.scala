@@ -27,4 +27,11 @@ case class Zipper[A](left: Stream[A], focus: A, right: Stream[A]) {
   // stream where each element is the focus once
   def duplicateRights: Stream[Zipper[A]] =
     unfold(this)(zipper => zipper.maybeRight.map(r => r -> r))
+
+  def toList: List[A] = left.reverse.toList ++ (focus :: right.toList)
+}
+
+object Zipper {
+  def fromSeq[A](ls: Seq[A]): Option[Zipper[A]] =
+    ls.headOption.map(Zipper(Stream.empty, _, ls.tail.toStream))
 }
