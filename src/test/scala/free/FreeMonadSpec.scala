@@ -1,6 +1,6 @@
 package free
 
-import free.FreeMonad.{Return, Suspend, Trampoline}
+import free.FreeMonad._
 import org.scalatest.{FunSpec, Matchers}
 
 class FreeMonadSpec extends FunSpec with Matchers {
