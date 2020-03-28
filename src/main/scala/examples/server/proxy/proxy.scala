@@ -1,8 +1,8 @@
-package examples.server.proxy.run
+package examples.server.proxy
 
 import java.net.Socket
 
-import examples.server.proxy.{ProxyServer, SimpleServer}
+import examples.server.proxy.tcp.{ProxyServer, SimpleServer}
 import examples.server.reader.InputReader
 
 object proxy extends InputReader {

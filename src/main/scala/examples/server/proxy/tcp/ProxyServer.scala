@@ -1,4 +1,4 @@
-package examples.server.proxy
+package examples.server.proxy.tcp
 
 import java.net.{ServerSocket, Socket}
 
