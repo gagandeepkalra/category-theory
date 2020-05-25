@@ -41,7 +41,7 @@ object FreeMonad {
     final def runT(implicit M: Monad[F],
                    extract: F[Free[F, A]] => Free[F, A]): F[A] = {
       resume match {
-        case Right(a)    => M.unit(a)
+        case Right(a)    => M.pure(a)
         case Left(fFree) => extract(fFree).runT
       }
     }
@@ -49,7 +49,7 @@ object FreeMonad {
     // tail recursive only if the monad is has stack safe flatMap
     def run(implicit M: Monad[F]): F[A] = {
       resume match {
-        case Right(a)    => M.unit(a)
+        case Right(a)    => M.pure(a)
         case Left(fFree) => M.flatMap(fFree)(_.run)
       }
     }
@@ -60,11 +60,11 @@ object FreeMonad {
     def runStep(implicit M: Monad[F]): F[A] = {
       @scala.annotation.tailrec
       def step(free: Free[F, A]): F[Either[Free[F, A], A]] = free match {
-        case Return(a)  => M.unit(Right(a))
+        case Return(a)  => M.pure(Right(a))
         case Suspend(s) => M.map(s)(Left(_))
         case FlatMap(fa, f) =>
           fa match {
-            case Return(a)      => M.unit(Left(f(a)))
+            case Return(a)      => M.pure(Left(f(a)))
             case Suspend(s)     => M.map(s)(free => Left(free.flatMap(f)))
             case FlatMap(ga, g) => step(ga.flatMap(a => g(a).flatMap(f)))
           }
@@ -84,7 +84,7 @@ object FreeMonad {
     override def flatMap[A, B](fa: () => A)(f: A => () => B): () => B =
       f(fa())
 
-    override def unit[A](a: A): () => A = () => a
+    override def pure[A](a: A): () => A = () => a
 
     @tailrec
     override def tailRecM[A, B](a: A)(f: A => () => Either[A, B]): () => B =
