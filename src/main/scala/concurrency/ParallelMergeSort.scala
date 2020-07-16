@@ -6,7 +6,7 @@ import scala.concurrent.duration.Duration
 import scala.concurrent.forkjoin.ForkJoinPool
 import scala.concurrent.{Await, ExecutionContext, Future}
 
-object MergeSort {
+object ParallelMergeSort {
 
   def mergeSort[A: Ordering](ls: List[A])(implicit ec: ExecutionContext): Future[List[A]] = {
     val size = ls.length
