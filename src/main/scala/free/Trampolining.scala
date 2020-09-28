@@ -7,6 +7,16 @@ object Trampolining {
     def map[B](f: A => B): TailRec[B] =
       flatMap(f andThen Return.apply)
 
+    @scala.annotation.tailrec
+    final def run: A = {
+      this match {
+        case Return(a)                    => a
+        case Suspend(resume)              => resume().run
+        case FlatMap(Return(z), g)        => g(z).run
+        case FlatMap(Suspend(resumeZ), g) => resumeZ().flatMap(g).run
+        case FlatMap(FlatMap(fz, f), g)   => fz.flatMap(f(_).flatMap(g)).run
+      }
+    }
   }
 
   case class Return[A](a: A) extends TailRec[A]

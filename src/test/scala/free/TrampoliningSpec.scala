@@ -40,7 +40,7 @@ class TrampoliningSpec extends FunSpec with Matchers {
           Suspend(() => acc(x).flatMap(elem))
       }
 
-      Trampolining.run(g(42)) shouldBe 42
+      g(42).run shouldBe 42
 
     }
 
