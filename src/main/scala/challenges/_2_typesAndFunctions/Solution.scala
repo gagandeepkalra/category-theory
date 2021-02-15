@@ -1,4 +1,4 @@
-package challenges.typesAndFunctions
+package challenges._2_typesAndFunctions
 
 import scala.annotation.tailrec
 import scala.collection.mutable
