@@ -47,7 +47,7 @@ object Solution {
 
     // Part 2. Most random number generators can be initialized with a seed. Implement a function that takes a seed, calls the
     // random number generator with that seed, and returns the result. Memoize that function. Does it work?
-    val memoizedWithSeed: Int => Int => Int = Memoization.memoize((seed: Int) =>
+    val memoizedWithSeed: Int => Int => Int = memoize((seed: Int) =>
       (n: Int) => new Random(seed).nextInt(n))
 
     val rand: Int => Int = memoizedWithSeed(6)
