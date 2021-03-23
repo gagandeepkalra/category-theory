@@ -1,4 +1,4 @@
-package challenges.Functors
+package challenges._7_Functors
 
 object Solution {
 
