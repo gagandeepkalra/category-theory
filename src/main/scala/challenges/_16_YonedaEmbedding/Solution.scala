@@ -132,17 +132,17 @@ object Solution {
   // Applying Yoneda embedding to a preorder category
   // [C, Set](C(a, _), C(b, _)) ~ C(b, a)
   //
-  // hom-set on right is non-empty iff b <= a
-  // consequently if b <= a (or right side is inhabited), there's 1:1 correspondence to left side
+  // hom-set on right is non-empty iff b < a
+  // consequently if b < a (or right side is inhabited), there's 1:1 correspondence to left side
   // there exists Natural Transformation.
   //
   // functions between (C(a, _), C(b, _)), hom-set C(a, _) and C(b, _) can have at-most one element and
   // singleton set cannot connect to empty set
   //
-  // this would mean that if a <= x exists, then b <= also exists,
-  // for every x, a <= x then b <= x given b <= a
+  // this would mean that if a < x exists, then b < x also exists,
+  // for every x, a < x then b < x given b < a
   //
-  // b <= a, iff for all x, a <= x implies b <= x
+  // b < a, iff for all x, a < x implies b < x
   //
 
 
