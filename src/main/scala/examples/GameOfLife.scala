@@ -1,6 +1,6 @@
 package examples
 
-import collections.GridZipper
+import collections.{GridStore, GridZipper}
 import instances.gridZipper._
 
 /**
@@ -15,6 +15,7 @@ object GameOfLife {
     * Any dead cell with three live neighbors becomes a live cell.
     * All other live cells die in the next generation. Similarly, all other dead cells stay dead.
     */
+  // Using GridZipper
   def computeNextStateValue(g: GridZipper[Int]): Int = {
     val (neighbours, value) = (g.getAllNeighbours, g.extract)
     val sum = neighbours.foldLeft(0)(_ + _.extract)
@@ -30,6 +31,22 @@ object GameOfLife {
     grid.coFlatMap(computeNextStateValue)
   }
 
+  // Using GridStore
+  def computeNextStateValue(g: GridStore[Int]): Int = {
+    val (neighbours, value) = (g.getAllNeighbourValues, g.value)
+    val sum = neighbours.sum
+    val result = (sum, value) match {
+      case (s, 1) if s == 2 || s == 3 => 1
+      case (3, 0)                     => 1
+      case _                          => 0
+    }
+    result
+  }
+
+  def nextGrid(grid: GridStore[Int]): GridStore[Int] = {
+    GridStore.GridStoreCoMonad.coFlatMap(grid)(computeNextStateValue)
+  }
+
   def main(args: Array[String]): Unit = {
     val board = List(List(0, 1, 0), List(1, 0, 0), List(0, 0, 1))
 
@@ -42,9 +59,16 @@ object GameOfLife {
           nextGrid(acc)
         })
     )
+
+    val initial: GridStore[Int] = GridStore.fromSeq(board)
+
+    (1 to 5).foldLeft(initial)((acc, i) => {
+      println(s"Generation $i\n${pretty(acc.toSeq(0 to 2))}")
+      nextGrid(acc)
+    })
   }
 
-  private def pretty(lss: List[List[Int]]): String = {
+  private def pretty(lss: Seq[Seq[Int]]): String = {
     lss.map(_.mkString(" ")).mkString("\n")
   }
 

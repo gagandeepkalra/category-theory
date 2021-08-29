@@ -64,7 +64,7 @@ object Catamorphism {
   final case class Fix[F[_]](unFix: F[Fix[F]])
 
   val fixedExprF: Fix[ExpressionF] =
-    Fix(MultF(Fix(AddF(Fix(ValueF(1)), Fix(ValueF(2)))), Fix(ValueF(3))))
+    Fix(MultF(Fix(AddF(Fix(unFix = ValueF(1)), Fix(unFix = ValueF(2)))), Fix(unFix = ValueF(3))))
 
   def evalFixedExprF(e: Fix[ExpressionF]): Int =
     e.unFix match {
