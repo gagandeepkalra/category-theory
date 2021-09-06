@@ -20,7 +20,7 @@ object Solution {
 
   type CoAlgebra[F[_], A] = A => F[A]
 
-  case class Fix[F[_]](value: F[Fix[F]])
+  case class Fix[F[_]](value: F[Fix[F]]) // Fix, unFix: f.value
 
   def catamorphism[F[_], A](F: Functor[F]): Algebra[F, A] => Fix[F] => A =
     algebra =>
@@ -60,7 +60,8 @@ object Solution {
 
   /**
     * 1. Implement the evaluation function for a ring of polynomials of one variable. You can represent a polynomial as a
-    * list of coefficients in front of powers of 𝑥. For instance, 4𝑥2 − 1 would be represented as (starting with the zero’th power)[-1, 0, 4].
+    * list of coefficients in front of powers of 𝑥. For instance, 4𝑥2 − 1 would be represented as (starting with the zero’th
+    * power)[-1, 0, 4].
     */
   type Polynomial[X] = (X, List[Int])
 
@@ -79,7 +80,7 @@ object Solution {
   type TypeNPolynomial[X] = List[Polynomial[X]]
 
   def evalTypeNPolynomial: Algebra[TypeNPolynomial, Int] =
-    p => p.foldLeft(0)(_ + evalPolynomial(_))
+    p => p.foldLeft(0)(_ * evalPolynomial(_))
 
   /**
     * 3. Implement the algebra for the ring of 2 × 2 matrices.
@@ -90,7 +91,7 @@ object Solution {
     case RZero() =>
       (0, 0, 0, 0)
     case ROne() =>
-      (1, 1, 1, 1)
+      (1, 0, 0, 1)
     case RAdd((a, b, c, d), (e, f, g, h)) =>
       (a + e, b + f, c + g, d + h)
     case RMul((a, b, c, d), (e, f, g, h)) =>
